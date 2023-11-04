@@ -1,0 +1,14 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "MERN_Store uses Monggo, Express, React, Node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "TayNguyen",
+  "license": "ISC",
+  "dependencies": {
+    "express": "4.18.2"
+  }
+}
