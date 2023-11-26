@@ -15,25 +15,34 @@ function Login() {
 
     const handleLogin = async () => {
         try {
+            if (username === '' || password === '') {
+                toast('Vui lòng nhập đầy đủ thông tin');
+                return;
+            }
+            if (password.length < 8) {
+                toast('Vui lòng nhập mật khẩu với ít nhất 8 kí tự');
+                return;
+            }
             const response = await axios.post(`${API_URL}/api/users/login`, { username, password });
-            localStorage.setItem('user_id', response.data.user._id);
-            localStorage.setItem('username', response.data.user.username);
-            localStorage.setItem('firstname', response.data.user.firstname);
-            localStorage.setItem('lastname', response.data.user.lastname);
-            localStorage.setItem('email', response.data.user.email);
-            localStorage.setItem('address', response.data.user.address);
-            localStorage.setItem('phone', response.data.user.phone);
-            localStorage.setItem('role', response.data.roleName);
-            localStorage.setItem('isLoggedIn', true);
-            if(response.status === 200){
+            
+            if (response.status === 200) {
+                localStorage.setItem('user_id', response.data.user._id);
+                localStorage.setItem('username', response.data.user.username);
+                localStorage.setItem('firstname', response.data.user.firstname);
+                localStorage.setItem('lastname', response.data.user.lastname);
+                localStorage.setItem('email', response.data.user.email);
+                localStorage.setItem('address', response.data.user.address);
+                localStorage.setItem('phone', response.data.user.phone);
+                localStorage.setItem('role', response.data.roleName);
+                localStorage.setItem('isLoggedIn', true);
                 toast('Đăng nhập thành công');
                 window.location.href = '/';
             }
-            else{
-                toast(response.data.message);
+            else {
+                toast('Đăng nhập không thành công');
             }
         } catch (error) {
-            console.error('Lỗi đăng nhập:', error);
+            toast(error.response.data.message);
         }
     }
     return (

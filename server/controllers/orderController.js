@@ -1,6 +1,9 @@
 const Order = require('../models/orderModel');
 const OrderItem = require('../models/orderItemModel');
 const User = require('../models/userModel');
+const ProductSizeColor = require('../models/productSizeColorModel');
+const Color = require('../models/colorModel');
+const Size = require('../models/sizeModel');
 
 // Lấy tất cả đơn hàng
 exports.getAllOrders = async (req, res) => {
@@ -27,7 +30,7 @@ exports.getOrderById = async (req, res) => {
 
 // Tạo đơn hàng mới
 exports.createOrder = async (req, res) => {
-  
+
   try {
     const newOrder = new Order({
       user_id: req.body.user_id,
@@ -42,16 +45,30 @@ exports.createOrder = async (req, res) => {
 
     for (const order_item of req.body.order_items) {
       const item = new OrderItem({
-          order_id: order._id,
-          product_id: order_item.product_id,
-          color: order_item.color,
-          size: order_item.size,
-          quantity: order_item.quantity,
+        order_id: order._id,
+        product_id: order_item.product_id,
+        color: order_item.color,
+        size: order_item.size,
+        quantity: order_item.quantity,
       });
 
       await item.save();
-  }
-  res.json({ message: 'Tạo mới đơn hàng thành công' });
+
+      const color = await Color.findOne({ color_name: order_item.color });
+      const size = await Size.findOne({ size_name: order_item.size });
+      await ProductSizeColor.findOneAndUpdate(
+        {
+          product_id: order_item.product_id,
+          color_id: color._id,
+          size_id: size._id,
+        },
+        {
+          $inc: { quantity: -order_item.quantity },
+        },
+        { new: true }
+      );
+    }
+    res.json({ message: 'Tạo mới đơn hàng thành công' });
   } catch (error) {
     res.status(500).json({ message: 'Lỗi khi tạo đơn hàng' });
   }

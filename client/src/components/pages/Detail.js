@@ -38,7 +38,6 @@ function Detail() {
             .then((response) => {
                 if (response.status === 200) {
                     setProductSizeColor(response.data);
-
                 }
             })
             .catch(() => {
@@ -63,6 +62,14 @@ function Detail() {
                 maxId = item.id;
             }
         });
+        const sizeText = sizeRef.current.value;
+        const colorMatch = sizeText.match(/Màu: (\S+)/);
+        const sizeMatch = sizeText.match(/Kích thước: (\d+)/);
+
+        const color = colorMatch[1];
+        const size = sizeMatch[1];
+
+        const foundProduct = productSizeColor.find(item => item.size_id.size_name === size && item.color_id.color_name === color);
 
         const newData = {
             id: maxId + 1,
@@ -72,11 +79,18 @@ function Detail() {
             price: product.price,
             qty: quantity,
             size: sizeRef.current.value,
+            remainingQuantity: foundProduct.quantity
         };
 
         const existingItem = cart.find(item => item.name === newData.name && item.size === newData.size);
         if (existingItem) {
-            existingItem.qty = parseInt(existingItem.qty) + parseInt(newData.qty);
+            var n = parseInt(existingItem.qty) + parseInt(newData.qty);
+            if (n <= existingItem.remainingQuantity) {
+                existingItem.qty = n;
+            } else {
+                toast('Số lượng sản phẩm trong kho không đủ');
+                return;
+            }
         } else {
             cart.push(newData);
         }
@@ -97,7 +111,21 @@ function Detail() {
     const [quantity, setQuantity] = useState(1);
 
     const handleIncreaseQuantity = () => {
-        setQuantity(quantity + 1);
+        const sizeText = sizeRef.current.value;
+        const colorMatch = sizeText.match(/Màu: (\S+)/);
+        const sizeMatch = sizeText.match(/Kích thước: (\d+)/);
+
+        const color = colorMatch[1];
+        const size = sizeMatch[1];
+
+        const foundProduct = productSizeColor.find(item => item.size_id.size_name === size && item.color_id.color_name === color);
+
+        if (quantity + 1 <= foundProduct.quantity) {
+            setQuantity(quantity + 1);
+        }
+        else {
+            toast('Số lượng sản phẩm trong kho không đủ');
+        }
     };
 
     const handleDecreaseQuantity = () => {
