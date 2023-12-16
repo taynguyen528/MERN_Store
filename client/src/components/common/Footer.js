@@ -264,21 +264,18 @@ function Footer() {
                                         style={{ display: "block" }}
                                     >
                                         <ul className="information">
+                                            
                                             <li>
                                                 <img src="//theme.hstatic.net/1000096703/1000836887/14/buildings.png?v=241" />
-                                                <span /> 20 Cửu Long, P15, Q.10, HCM
-                                            </li>
-                                            <li>
-                                                <img src="//theme.hstatic.net/1000096703/1000836887/14/buildings.png?v=241" />
-                                                <span /> 168 Nguyễn Trọng Tuyển, P8, Phú Nhuận
+                                                <span /> 01 Võ Văn Ngân, Linh Chiểu, Thủ Đức, Thành phố Hồ Chí Minh
                                             </li>
                                             <li>
                                                 <img src="//theme.hstatic.net/1000096703/1000836887/14/communications.png?v=241" />
-                                                <span>Hotline:</span> (028) 7300 6200{" "}
+                                                <span>Hotline:</span> 0867835779{" "}
                                             </li>
                                             <li>
                                                 <img src="//theme.hstatic.net/1000096703/1000836887/14/envelopes.png?v=241" />
-                                                <span>Mail:</span> kentasale@gmail.com
+                                                <span>Mail:</span> pttnguyen528@gmail.com
                                             </li>
                                         </ul>
                                     </div>

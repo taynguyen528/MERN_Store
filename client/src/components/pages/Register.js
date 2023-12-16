@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import API_URL from '../../config';
+import { API_URL } from '../../config';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -15,6 +15,25 @@ function Register() {
 
     const handleRegister = async () => {
         try {
+            if (!firstname || !lastname || !address || !phone || !email || !username || !password) {
+                toast('Vui lòng điền đầy đủ thông tin');
+                return;
+            }
+
+            const phonePattern = /^[0-9]{10}$/;
+            if (!phone.match(phonePattern)) {
+                toast('Số điện thoại không hợp lệ');
+                return;
+            }
+            if (password.length < 8) {
+                toast('Vui lòng nhập mật khẩu ít nhất 8 kí tự');
+                return;
+            }
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+            if (!email.match(emailPattern)) {
+                toast('Email không hợp lệ');
+                return;
+            }
             const userData = {
                 firstname: firstname,
                 lastname: lastname,
@@ -43,7 +62,7 @@ function Register() {
             <main className="mainContent-theme ">
                 <div className="layout-account">
                     <div className="container">
-                        <div className="row" style={{marginTop: "50px"}}>
+                        <div className="row" style={{ marginTop: "50px" }}>
                             <div className="col-md-6 col-xs-12 wrapbox-heading-account">
                                 <div className="header-page clearfix">
                                     <h1>Tạo tài khoản</h1>

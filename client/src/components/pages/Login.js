@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import API_URL from '../../config';
+import { API_URL } from '../../config';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './loading.css';
 
 function Login() {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -12,6 +13,7 @@ function Login() {
     }
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleLogin = async () => {
         try {
@@ -24,7 +26,7 @@ function Login() {
                 return;
             }
             const response = await axios.post(`${API_URL}/api/users/login`, { username, password });
-            
+
             if (response.status === 200) {
                 localStorage.setItem('user_id', response.data.user._id);
                 localStorage.setItem('username', response.data.user.username);
@@ -45,86 +47,124 @@ function Login() {
             toast(error.response.data.message);
         }
     }
+
+    function sendOtp() {
+        if (username) {
+            axios.get(`${API_URL}/api/users/check_username/${username}`).then((response) => {
+                setIsLoading(true);
+                if (response.status === 200) {
+                    const OTP = Math.floor(Math.random() * 9000 + 1000);
+                    localStorage.setItem('otp', OTP);
+                    localStorage.setItem('email_resetPass', response.data.email);
+                    localStorage.setItem('username_resetPass', username);
+
+                    axios.post(`${API_URL}/api/users/send_email`, {
+                        OTP: OTP,
+                        recipient_email: response.data.email,
+                    }, {
+                        headers: {
+                            'Content-Type': "application/json",
+                        },
+                    })
+                        .then(() => window.location.href = '/otpinput')
+                        .catch(console.log);
+                } else {
+                    alert("Người dùng có tên đăng nhập này không tồn tại!");
+                    console.log(response.data.message);
+                }
+            })
+                .catch(console.log);
+        } else {
+            setIsLoading(false);
+            alert("Vui lòng nhập tên đăng nhập");
+        }
+    }
+
     return (
         <>
-            <main className="mainContent-theme ">
-                <div className="layout-account">
-                    <div className="container">
-                        <div className="row">
-                            <div className="col-md-6 col-xs-12 wrapbox-heading-account">
-                                <div className="header-page clearfix">
-                                    <h1>Đăng nhập</h1>
+            {
+                isLoading &&
+                <div class="loading">Loading&#8230;</div>
+            }
+            <>
+                <main className="mainContent-theme ">
+                    <div className="layout-account">
+                        <div className="container">
+                            <div className="row">
+                                <div className="col-md-6 col-xs-12 wrapbox-heading-account">
+                                    <div className="header-page clearfix">
+                                        <h1>Đăng nhập</h1>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="col-md-6 col-xs-12 wrapbox-content-account">
-                                <div id="customer-login">
-                                    <div id="login" className="userbox">
-                                        <form
-                                            acceptCharset="UTF-8"
-                                            action="/account/login"
-                                            id="customer_login"
-                                            method="post"
-                                        >
-                                            <div className="clearfix large_form">
-                                                <label htmlFor="customer_email" className="icon-field">
-                                                    <i className="icon-login icon-envelope " />
-                                                </label>
-                                                <input
-                                                    required
-                                                    type="email"
-                                                    name="customer[email]"
-                                                    id="customer_email"
-                                                    placeholder="Email"
-                                                    className="text"
-                                                    value={username} onChange={e => setUsername(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="clearfix large_form">
-                                                <label htmlFor="customer_password" className="icon-field">
-                                                    <i className="icon-login icon-shield" />
-                                                </label>
-                                                <input
-                                                    required
-                                                    type="password"
-                                                    name="customer[password]"
-                                                    id="customer_password"
-                                                    placeholder="Mật khẩu"
-                                                    className="text"
-                                                    size={16}
-                                                    value={password} onChange={e => setPassword(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="clearfix action_account_custommer">
-                                                <div className="action_bottom btn btn-outline-primary">
+                                <div className="col-md-6 col-xs-12 wrapbox-content-account">
+                                    <div id="customer-login">
+                                        <div id="login" className="userbox">
+                                            <form
+                                                acceptCharset="UTF-8"
+                                                action="/account/login"
+                                                id="customer_login"
+                                                method="post"
+                                            >
+                                                <div className="clearfix large_form">
+                                                    <label htmlFor="customer_email" className="icon-field">
+                                                        <i className="icon-login icon-envelope " />
+                                                    </label>
                                                     <input
-                                                        className="btn btn-signin"
-                                                        onClick={handleLogin}
-                                                        defaultValue="Đăng nhập"
+                                                        required
+                                                        type="email"
+                                                        name="customer[email]"
+                                                        id="customer_email"
+                                                        placeholder="Email"
+                                                        className="text"
+                                                        value={username} onChange={e => setUsername(e.target.value)}
                                                     />
                                                 </div>
-                                                <div className="req_pass">
-                                                    <a
-                                                        href="/"
-                                                    >
-                                                        Quên mật khẩu?
-                                                    </a>
-                                                    <br />
-                                                    hoặc{" "}
-                                                    <a title="Đăng ký" href="/register">
-                                                        Đăng ký
-                                                    </a>
+                                                <div className="clearfix large_form">
+                                                    <label htmlFor="customer_password" className="icon-field">
+                                                        <i className="icon-login icon-shield" />
+                                                    </label>
+                                                    <input
+                                                        required
+                                                        type="password"
+                                                        name="customer[password]"
+                                                        id="customer_password"
+                                                        placeholder="Mật khẩu"
+                                                        className="text"
+                                                        size={16}
+                                                        value={password} onChange={e => setPassword(e.target.value)}
+                                                    />
                                                 </div>
-                                            </div>
-                                        </form>
+                                                <div className="clearfix action_account_custommer">
+                                                    <div className="action_bottom btn btn-outline-primary">
+                                                        <input
+                                                            className="btn btn-signin"
+                                                            onClick={handleLogin}
+                                                            defaultValue="Đăng nhập"
+                                                        />
+                                                    </div>
+                                                    <div className="req_pass">
+                                                        <a
+                                                            style={{ cursor: 'pointer' }} onClick={() => sendOtp()}
+                                                        >
+                                                            Quên mật khẩu?
+                                                        </a>
+                                                        <br />
+                                                        hoặc{" "}
+                                                        <a title="Đăng ký" href="/register">
+                                                            Đăng ký
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </main>
-
-            <ToastContainer />
+                </main>
+                <ToastContainer />
+            </>
         </>
     )
 }

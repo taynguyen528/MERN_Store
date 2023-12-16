@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import API_URL from '../../config';
+import { API_URL } from '../../config';
 import axios from 'axios';
 import { useParams } from "react-router";
 import Pagination from "https://cdn.skypack.dev/rc-pagination@3.1.15";
@@ -112,7 +112,6 @@ function Collection() {
                                         >
                                             <span
                                                 itemProp="item"
-                                                content="https://kenta.vn/collections/ao-khoac-ni"
                                             >
                                                 <span itemProp="name">{name}</span>
                                             </span>
@@ -230,24 +229,25 @@ function Collection() {
                                                         })
                                                     }
                                                 </div>
-
-                                                <div className="table-filter-info">
-                                                    <Pagination
-                                                        className="pagination-data"
-                                                        showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total}`}
-                                                        onChange={PaginationChange}
-                                                        total={dataByCategory.length}
-                                                        current={current}
-                                                        pageSize={size}
-                                                        showSizeChanger={false}
-                                                        itemRender={PrevNextArrow}
-                                                        onShowSizeChange={PerPageChange}
-                                                    />
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     : <h2>Không có sản phẩm nào thuộc danh mục {name}</h2>
+                                }
+                                {dataByCategory.length > 0 &&
+                                    <div className="table-filter-info">
+                                        <Pagination
+                                            className="pagination-data"
+                                            showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total}`}
+                                            onChange={PaginationChange}
+                                            total={dataByCategory.length}
+                                            current={current}
+                                            pageSize={size}
+                                            showSizeChanger={false}
+                                            itemRender={PrevNextArrow}
+                                            onShowSizeChange={PerPageChange}
+                                        />
+                                    </div>
                                 }
                             </div>
                         </div>

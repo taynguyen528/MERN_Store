@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import '../../App.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import API_URL from '../../config';
+import { API_URL } from '../../config';
 import axios from 'axios';
 import Pagination from "https://cdn.skypack.dev/rc-pagination@3.1.15";
 import { confirmAlert } from 'react-confirm-alert';
@@ -140,6 +140,10 @@ function ManageUser() {
             return;
         }
 
+        if (password.length < 8) {
+            toast('Vui lòng nhập mật khẩu ít nhất 8 kí tự');
+            return;
+        }
         const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         if (!email.match(emailPattern)) {
             toast('Email không hợp lệ');

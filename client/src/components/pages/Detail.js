@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useParams } from "react-router";
-import API_URL from '../../config';
+import {API_URL} from '../../config';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -64,7 +64,7 @@ function Detail() {
         });
         const sizeText = sizeRef.current.value;
         const colorMatch = sizeText.match(/Màu: (\S+)/);
-        const sizeMatch = sizeText.match(/Kích thước: (\d+)/);
+        const sizeMatch = sizeText.match(/Kích thước: (\S+)/);
 
         const color = colorMatch[1];
         const size = sizeMatch[1];
@@ -92,7 +92,12 @@ function Detail() {
                 return;
             }
         } else {
-            cart.push(newData);
+            if (foundProduct.quantity >= quantity) {
+                cart.push(newData);
+            } else {
+                toast('Số lượng sản phẩm trong kho không đủ');
+                return;
+            }
         }
         localStorage.setItem('cart', JSON.stringify(cart));
 
@@ -113,7 +118,7 @@ function Detail() {
     const handleIncreaseQuantity = () => {
         const sizeText = sizeRef.current.value;
         const colorMatch = sizeText.match(/Màu: (\S+)/);
-        const sizeMatch = sizeText.match(/Kích thước: (\d+)/);
+        const sizeMatch = sizeText.match(/Kích thước: (\S+)/);
 
         const color = colorMatch[1];
         const size = sizeMatch[1];
@@ -162,7 +167,7 @@ function Detail() {
                                         itemType="http://schema.org/ListItem"
                                     >
                                         <a
-                                            href="https://kenta.vn/collections/ao-thun"
+                                            href={"/collection/" + product.category_name}
                                             target="_self"
                                             itemProp="item"
                                         >
@@ -176,7 +181,7 @@ function Detail() {
                                         itemType="http://schema.org/ListItem"
                                     >
                                         <a
-                                            href="https://kenta.vn/collections/ao-thun"
+                                            href={"/collection/" + product.category_name + "/" + product.subcategory_name}
                                             target="_self"
                                             itemProp="item"
                                         >
@@ -192,7 +197,6 @@ function Detail() {
                                     >
                                         <span
                                             itemProp="item"
-                                            content="https://kenta.vn/products/ao-thun-unisex-kenta-studio-den-atn0146"
                                         >
                                             <span itemProp="name">
                                                 {product.product_name}
@@ -228,7 +232,7 @@ function Detail() {
                                                     <img
                                                         className="product-image-feature"
                                                         src="//product.hstatic.net/1000096703/product/atn_moi_dd01e45d11af4c4e98193f59173a4a14_master.jpg"
-                                                        alt=" Áo Thun Unisex Kenta Studio ATN0146 "
+                                                        alt={product.product_name}
                                                     />
                                                 </li>
                                             </ul>
@@ -387,8 +391,8 @@ function Detail() {
                                             <div className="product-block product-resize">
                                                 <div className="product-img">
                                                     <a
-                                                        href="/products/ao-thun-unisex-kenta-studio-trang-atn0146"
-                                                        title="Áo Thun Unisex Kenta Studio ATN0146"
+                                                        href={`/detail/${product._id}`}
+                                                        title={product.name}
                                                         className="image-resize"
                                                     >
                                                         <picture>
@@ -409,7 +413,7 @@ function Detail() {
                                                     <div className="box-pro-detail">
                                                         <h3 className="pro-name">
                                                             <a
-                                                                href="/products/ao-thun-unisex-kenta-studio-trang-atn0146"
+                                                                href={`/detail/${product._id}`}
                                                                 title={product.name}
                                                             >
                                                                 {product.name}

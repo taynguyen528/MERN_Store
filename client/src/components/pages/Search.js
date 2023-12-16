@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import API_URL from '../../config';
+import { API_URL } from '../../config';
 import axios from 'axios';
 import { useParams } from "react-router";
 import Pagination from "https://cdn.skypack.dev/rc-pagination@3.1.15";
@@ -137,19 +137,23 @@ function Search() {
                                                 })
                                             }
                                         </div>
-                                        <div className="table-filter-info">
-                                            <Pagination
-                                                className="pagination-data"
-                                                showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total}`}
-                                                onChange={PaginationChange}
-                                                total={dataSearch.length}
-                                                current={current}
-                                                pageSize={size}
-                                                showSizeChanger={false}
-                                                itemRender={PrevNextArrow}
-                                                onShowSizeChange={PerPageChange}
-                                            />
-                                        </div>
+                                        {
+                                            dataSearch.length > 0 ?
+                                                <div className="table-filter-info">
+                                                    <Pagination
+                                                        className="pagination-data"
+                                                        showTotal={(total, range) => `Showing ${range[0]}-${range[1]} of ${total}`}
+                                                        onChange={PaginationChange}
+                                                        total={dataSearch.length}
+                                                        current={current}
+                                                        pageSize={size}
+                                                        showSizeChanger={false}
+                                                        itemRender={PrevNextArrow}
+                                                        onShowSizeChange={PerPageChange}
+                                                    />
+                                                </div>
+                                                : <p>Không có kết quả phù hợp</p>
+                                        }
                                     </div>
                                 </div>
                             </div>

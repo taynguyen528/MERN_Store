@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import '../../App.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import API_URL from '../../config';
+import {API_URL} from '../../config';
 import axios from 'axios';
 import Pagination from "https://cdn.skypack.dev/rc-pagination@3.1.15";
 import { confirmAlert } from 'react-confirm-alert';

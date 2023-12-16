@@ -11,11 +11,16 @@ import ManageUser from './components/pages/ManageUser';
 import ManageOrder from './components/pages/ManageOrder';
 import ManageProduct from './components/pages/ManageProduct';
 import PurchaseOrder from './components/pages/PurchaseOrder';
+import OTPInput from './components/pages/OTPInput';
+import Reset from './components/pages/Reset';
 
 class DieuHuongURL extends Component {
     render() {
         return (
             <Routes>
+                <Route path="/otpinput" element={<OTPInput />} />
+                <Route path="/reset" element={<Reset />} />
+                <Route path="/purchase-order" element={<PurchaseOrder />} />
                 <Route path="/purchase-order" element={<PurchaseOrder />} />
                 <Route path="/manage-product" element={<ManageProduct />} />
                 <Route path="/manage-order" element={<ManageOrder />} />

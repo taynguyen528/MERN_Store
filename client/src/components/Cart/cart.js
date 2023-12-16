@@ -4,8 +4,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useCart } from './CartContext';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import API_URL from '../../config';
+import { CLIENT_ID, API_URL } from '../../config';
 import axios from 'axios';
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const Cart = () => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -33,12 +34,15 @@ const Cart = () => {
 
     // -----Increment Event------
     const increaseQuantity = (i, id) => {
-        var flag = false;
+        const storedCount = localStorage.getItem('count');
 
+        localStorage.setItem('count', parseInt(storedCount, 10) + 1);
+        updateToCart();
+        var n = 0;
         SetProducts((preValue) =>
             preValue.map((data, o) => {
                 if (i === o) {
-
+                    n++;
                     const storedData = JSON.parse(localStorage.getItem('cart')) || [];
 
                     const itemIndex = storedData.findIndex(item => item.id == id);
@@ -47,14 +51,19 @@ const Cart = () => {
                         if (data.qty + 1 <= storedData[itemIndex].remainingQuantity) {
                             storedData[itemIndex].qty = data.qty + 1;
                             localStorage.setItem('cart', JSON.stringify(storedData));
-                            flag = true;
                             return {
                                 ...data,
                                 qty: data.qty + 1
                             };
                         }
                         else {
-                            toast('Số lượng sản phẩm trong kho không đủ');
+                            if (n == 1) {
+                                toast('Số lượng sản phẩm trong kho không đủ');
+                                const storedCount = localStorage.getItem('count');
+
+                                localStorage.setItem('count', parseInt(storedCount, 10) - 1);
+                                updateToCart();
+                            }
                             return {
                                 ...data,
                                 qty: data.qty
@@ -65,13 +74,6 @@ const Cart = () => {
                 return data;
             })
         );
-        if (flag) {
-
-            const storedCount = localStorage.getItem('count');
-
-            localStorage.setItem('count', parseInt(storedCount, 10) + 1);
-            updateToCart();
-        }
     };
 
     // -----Decrement Event------
@@ -176,7 +178,7 @@ const Cart = () => {
         return "";
     }
 
-    const checkout = () => {
+    const checkout = (status) => {
         const isLoggedIn = localStorage.getItem('isLoggedIn');
         if (!isLoggedIn) {
             toast("Vui lòng đăng nhập trước khi đặt hàng");
@@ -198,7 +200,7 @@ const Cart = () => {
                 color: item.price,
                 color: color,
                 size: size,
-                quantity: item.qty
+                quantity: item.qty,
             };
 
             dataOrderDetail.push(newData);
@@ -213,7 +215,7 @@ const Cart = () => {
             address: addressRef.current.value,
             order_date: currentTime,
             total_price: cartTotalAmount,
-            status: 'Chờ xác nhận',
+            status: status,
             note: noteRef.current.value,
             order_items: dataOrderDetail
         };
@@ -232,112 +234,171 @@ const Cart = () => {
 
     }
 
+    const [success, setSuccess] = useState(false);
+    const [ErrorMessage, setErrorMessage] = useState("");
+    const [orderID, setOrderID] = useState(false);
+
+    // creates a paypal order
+    const createOrder = async (data, actions) => {
+        const response = await axios.get(
+            "https://api.exchangerate-api.com/v4/latest/USD"
+        );
+        const usdAmount = (cartTotalAmount / response.data.rates.VND).toFixed(2);
+
+        return actions.order
+            .create({
+                purchase_units: [
+                    {
+                        description: "Sunflower",
+                        amount: {
+                            currency_code: "USD",
+                            value: usdAmount,
+                        },
+                    },
+                ],
+            })
+            .then((orderID) => {
+                setOrderID(orderID);
+                return orderID;
+            });
+    };
+
+    // check Approval
+    const onApprove = (data, actions) => {
+        return actions.order.capture().then(function (details) {
+            const { payer } = details;
+            setSuccess(true);
+        });
+    };
+
+    //capture likely error
+    const onError = (data, actions) => {
+        setErrorMessage("An Error occured with your payment ");
+    };
+
+    useEffect(() => {
+        if (success) {
+            checkout('Đã thanh toán');
+        }
+    }, [success]);
+
     return (
         <>
-            <div className="sec_row container">
-                <div className="justify-content-center m-0">
-                    <div className="mt-5 mb-5">
-                        <div className="card">
-                            <div className="card-header bg-dark p-3">
-                                <div className="card-header-flex">
-                                    <h5 className="text-white m-0">Giỏ hàng {products.length > 0 ? `(${products.length})` : ''}</h5>
-                                    {
-                                        products.length > 0 ? <button className="btn btn-danger mt-0 btn-sm" onClick={() => emptycart()}><i className="fa fa-trash-alt mr-2"></i><span>Làm trống giỏ hàng</span></button> : ''}
+            <PayPalScriptProvider options={{ "client-id": CLIENT_ID }}>
+                <div className="sec_row container">
+                    <div className="justify-content-center m-0">
+                        <div className="mt-5 mb-5">
+                            <div className="card">
+                                <div className="card-header bg-dark p-3">
+                                    <div className="card-header-flex">
+                                        <h5 className="text-white m-0">Giỏ hàng {products.length > 0 ? `(${products.length})` : ''}</h5>
+                                        {
+                                            products.length > 0 ? <button className="btn btn-danger mt-0 btn-sm" onClick={() => emptycart()}><i className="fa fa-trash-alt mr-2"></i><span>Làm trống giỏ hàng</span></button> : ''}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="card-body p-0">
-                                {
-                                    products.length === 0 ? <table className="table cart-table mb-0">
-                                        <tbody>
-                                            <tr>
-                                                <td colSpan="6">
-                                                    <div className="cart-empty">
-                                                        <i className="fa fa-shopping-cart"></i>
-                                                        <p>Giỏ hàng trống</p>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table> :
-                                        <>
-                                            <table className="table cart-table mb-0">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Xóa</th>
-                                                        <th>Hình ảnh</th>
-                                                        <th>Tên sản phẩm</th>
-                                                        <th>Kích thước</th>
-                                                        <th>Giá</th>
-                                                        <th>Số lượng</th>
-                                                        <th className="text-right"><span id="amount" className="amount">Tổng giá</span></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {
-                                                        products.map((data, index) => {
-                                                            const { id, image, name, price, qty, size } = data;
-                                                            return (
-                                                                <tr key={index}>
-                                                                    <td><button className="prdct-delete" onClick={() => removeFromCart(index, id)}><i className="fa fa-trash"></i></button></td>
-                                                                    <td><div className="product-img"><img src={API_URL + image} alt="" /></div></td>
-                                                                    <td><div className="product-name"><p>{name}</p></div></td>
-                                                                    <td><p>{size}</p></td>
-                                                                    <td>{formattedPrice(price)}</td>
-                                                                    <td>
-                                                                        <div className="prdct-qty-container">
-                                                                            <button className="prdct-qty-btn" type="button" onClick={() => decreaseQuantity(index, id)}>
-                                                                                <i className="fa fa-minus"></i>
-                                                                            </button>
-                                                                            <input type="text" name="qty" className="qty-input-box" value={qty} disabled />
-                                                                            <button className="prdct-qty-btn" type="button" onClick={() => increaseQuantity(index, id)}>
-                                                                                <i className="fa fa-plus"></i>
-                                                                            </button>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td className="text-right">{formattedPrice(qty * price)}</td>
-                                                                </tr>
-                                                            )
-                                                        })
-                                                    }
-                                                </tbody>
-                                                <tfoot>
-                                                    <tr>
-                                                        <th>&nbsp;</th>
-                                                        <th colSpan="4">&nbsp;</th>
-                                                        <th>Tổng<span className="ml-2 mr-2">:</span><span className="text-danger">{cartTotalQty}</span></th>
-                                                        <th className="text-right"><span className="text-danger">{formattedPrice(cartTotalAmount)}</span></th>
-                                                    </tr>
-                                                </tfoot>
-                                            </table>
-                                            {
-                                                isLoggedIn ?
-                                                    <div className="col-md-3">
-                                                        <div className="form-group">
-                                                            <label>Số điện thoại <b style={{ color: "red" }}>*</b></label>
-                                                            <input type="tel" className="form-control" ref={phoneRef} />
+                                <div className="card-body p-0">
+                                    {
+                                        products.length === 0 ? <table className="table cart-table mb-0">
+                                            <tbody>
+                                                <tr>
+                                                    <td colSpan="6">
+                                                        <div className="cart-empty">
+                                                            <i className="fa fa-shopping-cart"></i>
+                                                            <p>Giỏ hàng trống</p>
                                                         </div>
-                                                        <div className="form-group">
-                                                            <label>Địa chỉ <b style={{ color: "red" }}>*</b></label>
-                                                            <textarea className="form-control" ref={addressRef} />
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table> :
+                                            <>
+                                                <table className="table cart-table mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Xóa</th>
+                                                            <th>Hình ảnh</th>
+                                                            <th>Tên sản phẩm</th>
+                                                            <th>Kích thước</th>
+                                                            <th>Giá</th>
+                                                            <th>Số lượng</th>
+                                                            <th className="text-right"><span id="amount" className="amount">Tổng giá</span></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {
+                                                            products.map((data, index) => {
+                                                                const { id, image, name, price, qty, size } = data;
+                                                                return (
+                                                                    <tr key={index}>
+                                                                        <td><button className="prdct-delete" onClick={() => removeFromCart(index, id)}><i className="fa fa-trash"></i></button></td>
+                                                                        <td><div className="product-img"><img src={API_URL + image} alt="" /></div></td>
+                                                                        <td><div className="product-name"><p>{name}</p></div></td>
+                                                                        <td><p>{size}</p></td>
+                                                                        <td>{formattedPrice(price)}</td>
+                                                                        <td>
+                                                                            <div className="prdct-qty-container">
+                                                                                <button className="prdct-qty-btn" type="button" onClick={() => decreaseQuantity(index, id)}>
+                                                                                    <i className="fa fa-minus"></i>
+                                                                                </button>
+                                                                                <input type="text" name="qty" className="qty-input-box" value={qty} disabled />
+                                                                                <button className="prdct-qty-btn" type="button" onClick={() => increaseQuantity(index, id)}>
+                                                                                    <i className="fa fa-plus"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td className="text-right">{formattedPrice(qty * price)}</td>
+                                                                    </tr>
+                                                                )
+                                                            })
+                                                        }
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <th>&nbsp;</th>
+                                                            <th colSpan="4">&nbsp;</th>
+                                                            <th>Tổng<span className="ml-2 mr-2">:</span><span className="text-danger">{cartTotalQty}</span></th>
+                                                            <th className="text-right"><span className="text-danger">{formattedPrice(cartTotalAmount)}</span></th>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                                {
+                                                    isLoggedIn ?
+                                                        <div className="col-md-3">
+                                                            <div className="form-group">
+                                                                <label>Số điện thoại <b style={{ color: "red" }}>*</b></label>
+                                                                <input type="tel" className="form-control" ref={phoneRef} />
+                                                            </div>
+                                                            <div className="form-group">
+                                                                <label>Địa chỉ <b style={{ color: "red" }}>*</b></label>
+                                                                <textarea className="form-control" ref={addressRef} />
+                                                            </div>
+                                                            <div className="form-group">
+                                                                <label>Ghi chú</label>
+                                                                <textarea className="form-control" ref={noteRef} />
+                                                            </div>
+                                                            <div className="form-group">
+                                                                <button className="btn btn-success" onClick={()=>checkout('Chờ xác nhận')}>Đặt hàng</button>
+                                                            </div>
+
+                                                            <div className="form-group">
+                                                                <PayPalButtons
+                                                                    style={{ layout: "vertical" }}
+                                                                    createOrder={createOrder}
+                                                                    onApprove={onApprove}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                        <div className="form-group">
-                                                            <label>Ghi chú</label>
-                                                            <textarea className="form-control" ref={noteRef} />
-                                                        </div>
-                                                        <div className="form-group">
-                                                            <button className="btn btn-success" onClick={checkout}>Đặt hàng</button>
-                                                        </div>
-                                                    </div>
-                                                    : <a href='/login' className="btn btn-success">Đăng nhập trước khi đặt hàng</a>
-                                            }
-                                        </>
-                                }
+                                                        : <a href='/login' className="btn btn-success">Đăng nhập trước khi đặt hàng</a>
+                                                }
+                                            </>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <ToastContainer /></>
+                <ToastContainer />
+            </PayPalScriptProvider >
+        </>
     );
 }
 
