@@ -1,10 +1,10 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from "react";
 import { useParams } from "react-router";
-import {API_URL} from '../../config';
-import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { useCart } from '../Cart/CartContext';
+import { API_URL } from "../../config";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useCart } from "../Cart/CartContext";
 
 function Detail() {
     const { productsCount, updateToCart } = useCart();
@@ -18,42 +18,49 @@ function Detail() {
 
     let { id } = useParams();
     useEffect(() => {
-        axios.get(`${API_URL}/api/products/${id}`)
-            .then(response => {
+        axios
+            .get(`${API_URL}/api/products/${id}`)
+            .then((response) => {
                 setProduct(response.data);
-                axios.get(`${API_URL}/api/subcategories/${response.data.subcategory_id}/products/${id}`)
-                    .then(response => {
+                axios
+                    .get(
+                        `${API_URL}/api/subcategories/${response.data.subcategory_id}/products/${id}`
+                    )
+                    .then((response) => {
                         setListProduct(response.data);
                     })
-                    .catch(() => {
-                    });
+                    .catch(() => {});
             })
-            .catch(() => {
-            });
-        axios.get(`${API_URL}/api/products/${id}/images`)
-            .then(response => { setImages(response.data); })
-            .catch(() => {
-            });
-        axios.get(`${API_URL}/api/productsizecolors/${id}`)
+            .catch(() => {});
+        axios
+            .get(`${API_URL}/api/products/${id}/images`)
+            .then((response) => {
+                setImages(response.data);
+            })
+            .catch(() => {});
+        axios
+            .get(`${API_URL}/api/productsizecolors/${id}`)
             .then((response) => {
                 if (response.status === 200) {
                     setProductSizeColor(response.data);
                 }
             })
-            .catch(() => {
-            });
+            .catch(() => {});
     }, []);
 
     const formattedPrice = (price) => {
         const priceAsNumber = parseFloat(price);
         if (!isNaN(priceAsNumber)) {
-            const formattedPrice = priceAsNumber.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+            const formattedPrice = priceAsNumber.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+            });
             return formattedPrice;
         }
         return "";
-    }
+    };
 
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     const addToCart = () => {
         let maxId = 0;
@@ -67,10 +74,16 @@ function Detail() {
         const sizeMatch = sizeText.match(/Kích thước: (\S+)/);
 
         const color = colorMatch[1];
-        const size = sizeMatch[1];
+        var size = sizeMatch[1];
 
-        const foundProduct = productSizeColor.find(item => item.size_id.size_name === size && item.color_id.color_name === color);
-
+        if (size === "NO") {
+            size = "NO SIZE";
+        }
+        const foundProduct = productSizeColor.find(
+            (item) =>
+                item.size_id.size_name === size &&
+                item.color_id.color_name === color
+        );
         const newData = {
             id: maxId + 1,
             image: product.url_image1,
@@ -79,39 +92,41 @@ function Detail() {
             price: product.price,
             qty: quantity,
             size: sizeRef.current.value,
-            remainingQuantity: foundProduct.quantity
+            remainingQuantity: foundProduct.quantity,
         };
 
-        const existingItem = cart.find(item => item.name === newData.name && item.size === newData.size);
+        const existingItem = cart.find(
+            (item) => item.name === newData.name && item.size === newData.size
+        );
         if (existingItem) {
             var n = parseInt(existingItem.qty) + parseInt(newData.qty);
             if (n <= existingItem.remainingQuantity) {
                 existingItem.qty = n;
             } else {
-                toast('Số lượng sản phẩm trong kho không đủ');
+                toast("Số lượng sản phẩm trong kho không đủ");
                 return;
             }
         } else {
             if (foundProduct.quantity >= quantity) {
                 cart.push(newData);
             } else {
-                toast('Số lượng sản phẩm trong kho không đủ');
+                toast("Số lượng sản phẩm trong kho không đủ");
                 return;
             }
         }
-        localStorage.setItem('cart', JSON.stringify(cart));
+        localStorage.setItem("cart", JSON.stringify(cart));
 
-        const storedCount = localStorage.getItem('count');
+        const storedCount = localStorage.getItem("count");
         const parsedCount = parseInt(storedCount, 10);
 
         if (!isNaN(parsedCount)) {
-            localStorage.setItem('count', parsedCount + quantity);
+            localStorage.setItem("count", parsedCount + quantity);
         } else {
-            localStorage.setItem('count', quantity);
+            localStorage.setItem("count", quantity);
         }
         updateToCart();
-        toast('Thêm sản phẩm vào giỏ hàng thành công');
-    }
+        toast("Thêm sản phẩm vào giỏ hàng thành công");
+    };
 
     const [quantity, setQuantity] = useState(1);
 
@@ -121,15 +136,20 @@ function Detail() {
         const sizeMatch = sizeText.match(/Kích thước: (\S+)/);
 
         const color = colorMatch[1];
-        const size = sizeMatch[1];
-
-        const foundProduct = productSizeColor.find(item => item.size_id.size_name === size && item.color_id.color_name === color);
+        var size = sizeMatch[1];
+        if (size === "NO") {
+            size = "NO SIZE";
+        }
+        const foundProduct = productSizeColor.find(
+            (item) =>
+                item.size_id.size_name === size &&
+                item.color_id.color_name === color
+        );
 
         if (quantity + 1 <= foundProduct.quantity) {
             setQuantity(quantity + 1);
-        }
-        else {
-            toast('Số lượng sản phẩm trong kho không đủ');
+        } else {
+            toast("Số lượng sản phẩm trong kho không đủ");
         }
     };
 
@@ -156,8 +176,14 @@ function Detail() {
                                         itemScope=""
                                         itemType="http://schema.org/ListItem"
                                     >
-                                        <a href="/" target="_self" itemProp="item">
-                                            <span itemProp="name">Trang chủ</span>
+                                        <a
+                                            href="/"
+                                            target="_self"
+                                            itemProp="item"
+                                        >
+                                            <span itemProp="name">
+                                                Trang chủ
+                                            </span>
                                         </a>
                                         <meta itemProp="position" content={1} />
                                     </li>
@@ -167,11 +193,16 @@ function Detail() {
                                         itemType="http://schema.org/ListItem"
                                     >
                                         <a
-                                            href={"/collection/" + product.category_name}
+                                            href={
+                                                "/collection/" +
+                                                product.category_name
+                                            }
                                             target="_self"
                                             itemProp="item"
                                         >
-                                            <span itemProp="name">{product.category_name}</span>
+                                            <span itemProp="name">
+                                                {product.category_name}
+                                            </span>
                                         </a>
                                         <meta itemProp="position" content={2} />
                                     </li>
@@ -181,11 +212,18 @@ function Detail() {
                                         itemType="http://schema.org/ListItem"
                                     >
                                         <a
-                                            href={"/collection/" + product.category_name + "/" + product.subcategory_name}
+                                            href={
+                                                "/collection/" +
+                                                product.category_name +
+                                                "/" +
+                                                product.subcategory_name
+                                            }
                                             target="_self"
                                             itemProp="item"
                                         >
-                                            <span itemProp="name">{product.subcategory_name}</span>
+                                            <span itemProp="name">
+                                                {product.subcategory_name}
+                                            </span>
                                         </a>
                                         <meta itemProp="position" content={3} />
                                     </li>
@@ -195,9 +233,7 @@ function Detail() {
                                         itemScope=""
                                         itemType="http://schema.org/ListItem"
                                     >
-                                        <span
-                                            itemProp="item"
-                                        >
+                                        <span itemProp="item">
                                             <span itemProp="name">
                                                 {product.product_name}
                                             </span>
@@ -220,19 +256,30 @@ function Detail() {
                                                 id="sliderproduct"
                                                 className="site-box-content 2 slide_product hidden-xs"
                                             >
-                                                {images.map(image => (
-                                                    <li className="product-gallery-item gallery-item" key={image._id}>
+                                                {images.map((image) => (
+                                                    <li
+                                                        className="product-gallery-item gallery-item"
+                                                        key={image._id}
+                                                    >
                                                         <img
                                                             className="product-image-feature"
-                                                            src={API_URL + image.image_url}
+                                                            src={
+                                                                API_URL +
+                                                                image.image_url
+                                                            }
                                                         />
                                                     </li>
                                                 ))}
-                                                <li className="product-gallery-item gallery-item" ref={contentRef}>
+                                                <li
+                                                    className="product-gallery-item gallery-item"
+                                                    ref={contentRef}
+                                                >
                                                     <img
                                                         className="product-image-feature"
                                                         src="//product.hstatic.net/1000096703/product/atn_moi_dd01e45d11af4c4e98193f59173a4a14_master.jpg"
-                                                        alt={product.product_name}
+                                                        alt={
+                                                            product.product_name
+                                                        }
                                                     />
                                                 </li>
                                             </ul>
@@ -249,8 +296,13 @@ function Detail() {
                                             <strong>SKU:</strong> ATN0146MMDE
                                         </span>
                                     </div>
-                                    <div className="product-price" id="price-preview">
-                                        <span className="pro-price">{formattedPrice(product.price)}</span>
+                                    <div
+                                        className="product-price"
+                                        id="price-preview"
+                                    >
+                                        <span className="pro-price">
+                                            {formattedPrice(product.price)}
+                                        </span>
                                     </div>
                                     <form
                                         id="add-item-form"
@@ -259,10 +311,26 @@ function Detail() {
                                         className="variants clearfix"
                                     >
                                         <div className="clearfix">
-                                            <select className='form-control' ref={sizeRef}>
-                                                {productSizeColor.map(size => (
-                                                    <option key={size._id}>Màu: {size.color_id.color_name} / Kích thước: {size.size_id.size_name}</option>
-                                                ))}
+                                            <select
+                                                className="form-control"
+                                                ref={sizeRef}
+                                            >
+                                                {productSizeColor.map(
+                                                    (size) => (
+                                                        <option key={size._id}>
+                                                            Màu:{" "}
+                                                            {
+                                                                size.color_id
+                                                                    .color_name
+                                                            }{" "}
+                                                            / Kích thước:{" "}
+                                                            {
+                                                                size.size_id
+                                                                    .size_name
+                                                            }
+                                                        </option>
+                                                    )
+                                                )}
                                             </select>
                                         </div>
                                         <div className="select-swatch clearfix">
@@ -274,9 +342,17 @@ function Detail() {
                                             >
                                                 <a
                                                     className="pull-right"
-                                                    style={{ margin: "10px 25px", cursor: "pointer" }}
+                                                    style={{
+                                                        margin: "10px 25px",
+                                                        cursor: "pointer",
+                                                    }}
                                                     onClick={() => {
-                                                        contentRef.current.scrollIntoView({ behavior: 'smooth' })
+                                                        contentRef.current.scrollIntoView(
+                                                            {
+                                                                behavior:
+                                                                    "smooth",
+                                                            }
+                                                        );
                                                     }}
                                                 >
                                                     CÁCH CHỌN SIZE
@@ -289,7 +365,9 @@ function Detail() {
                                                     type="button"
                                                     defaultValue="-"
                                                     className="qty-btn"
-                                                    onClick={handleDecreaseQuantity}
+                                                    onClick={
+                                                        handleDecreaseQuantity
+                                                    }
                                                 />
                                                 <input
                                                     value={quantity}
@@ -303,7 +381,9 @@ function Detail() {
                                                     type="button"
                                                     defaultValue="+"
                                                     className="qty-btn"
-                                                    onClick={handleIncreaseQuantity}
+                                                    onClick={
+                                                        handleIncreaseQuantity
+                                                    }
                                                 />
                                             </div>
                                             <div className="wrap-addcart clearfix">
@@ -315,7 +395,10 @@ function Detail() {
                                                         name="add"
                                                         onClick={addToCart}
                                                     >
-                                                        <span> Thêm vào giỏ </span>
+                                                        <span>
+                                                            {" "}
+                                                            Thêm vào giỏ{" "}
+                                                        </span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -331,24 +414,36 @@ function Detail() {
                                             </button>
                                         </div>
                                     </form>
-                                    <div className="hrv-pmo-coupon" data-hrvpmo-layout="minimum" />
-                                    <div className="hrv-pmo-discount" data-hrvpmo-layout="minimum" />
+                                    <div
+                                        className="hrv-pmo-coupon"
+                                        data-hrvpmo-layout="minimum"
+                                    />
+                                    <div
+                                        className="hrv-pmo-discount"
+                                        data-hrvpmo-layout="minimum"
+                                    />
                                     <div className="product-description">
                                         <div className="title-bl">
                                             <h2>Mô tả</h2>
                                         </div>
                                         <div className="description-content">
                                             <div className="description-productdetail">
+                                                <p>{product.description}</p>
                                                 <p>
-                                                    {product.description}
+                                                    <strong>
+                                                        Hướng dẫn bảo quản:
+                                                    </strong>
                                                 </p>
                                                 <p>
-                                                    <strong>Hướng dẫn bảo quản:</strong>
+                                                    - Không dùng hóa chất tẩy.
                                                 </p>
-                                                <p>- Không dùng hóa chất tẩy.</p>
-                                                <p>- Ủi ở nhiệt độ thích hợp, hạn chế dùng máy sấy.</p>
                                                 <p>
-                                                    - Giặt ở chế độ bình thường, với đồ có màu tương tự.
+                                                    - Ủi ở nhiệt độ thích hợp,
+                                                    hạn chế dùng máy sấy.
+                                                </p>
+                                                <p>
+                                                    - Giặt ở chế độ bình thường,
+                                                    với đồ có màu tương tự.
                                                     <br />
                                                 </p>
                                                 <div
@@ -356,7 +451,7 @@ function Detail() {
                                                     style={{
                                                         position: "relative",
                                                         paddingBottom: "56.25%",
-                                                        height: 0
+                                                        height: 0,
                                                     }}
                                                 >
                                                     <iframe
@@ -365,17 +460,21 @@ function Detail() {
                                                         height={360}
                                                         src="https://www.youtube.com/embed/3cyhVEOIo44"
                                                         style={{
-                                                            aspectRatio: "16 / 9",
+                                                            aspectRatio:
+                                                                "16 / 9",
                                                             width: "100%",
                                                             height: "100%",
-                                                            position: "absolute"
+                                                            position:
+                                                                "absolute",
                                                         }}
                                                     />
                                                 </div>
                                                 <p></p>
                                             </div>
                                             <a id="detail_more">
-                                                <span className="btn-effect">Xem thêm</span>
+                                                <span className="btn-effect">
+                                                    Xem thêm
+                                                </span>
                                             </a>
                                         </div>
                                     </div>
@@ -386,8 +485,11 @@ function Detail() {
                                     <h2>Sản phẩm liên quan</h2>
                                 </div>
                                 <div className="content-product-list row">
-                                    {listProduct.map(product => (
-                                        <div className="col-md-3 col-sm-6 col-xs-6 pro-loop" key={product._id}>
+                                    {listProduct.map((product) => (
+                                        <div
+                                            className="col-md-3 col-sm-6 col-xs-6 pro-loop"
+                                            key={product._id}
+                                        >
                                             <div className="product-block product-resize">
                                                 <div className="product-img">
                                                     <a
@@ -398,13 +500,19 @@ function Detail() {
                                                         <picture>
                                                             <img
                                                                 className="img-loop"
-                                                                src={API_URL + product.url_image1}
+                                                                src={
+                                                                    API_URL +
+                                                                    product.url_image1
+                                                                }
                                                             />
                                                         </picture>
                                                         <picture>
                                                             <img
                                                                 className="img-loop img-hover"
-                                                                src={API_URL + product.url_image2}
+                                                                src={
+                                                                    API_URL +
+                                                                    product.url_image2
+                                                                }
                                                             />
                                                         </picture>
                                                     </a>
@@ -414,14 +522,18 @@ function Detail() {
                                                         <h3 className="pro-name">
                                                             <a
                                                                 href={`/detail/${product._id}`}
-                                                                title={product.name}
+                                                                title={
+                                                                    product.name
+                                                                }
                                                             >
                                                                 {product.name}
                                                             </a>
                                                         </h3>
                                                         <div className="box-pro-prices">
                                                             <p className="pro-price ">
-                                                                {formattedPrice(product.price)}
+                                                                {formattedPrice(
+                                                                    product.price
+                                                                )}
                                                                 <span className="pro-price-del" />
                                                             </p>
                                                         </div>
@@ -438,7 +550,6 @@ function Detail() {
             </div>
             <ToastContainer />
         </main>
-
     );
 }
 
