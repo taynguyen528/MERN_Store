@@ -203,10 +203,6 @@ module.exports = {
                 category_id: catPhuKien._id,
                 name: "Khăn Tập",
             },
-            {
-                category_id: catPhuKien._id,
-                name: "Dây Nịt",
-            },
         ]);
 
         const subcatGiayDep = await subcategorysCollection.findOne({

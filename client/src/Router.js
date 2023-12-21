@@ -13,11 +13,19 @@ import ManageProduct from './components/pages/ManageProduct';
 import PurchaseOrder from './components/pages/PurchaseOrder';
 import OTPInput from './components/pages/OTPInput';
 import Reset from './components/pages/Reset';
+import ManageProfile from './components/pages/ManageProfile';
+import ManageCategory from './components/pages/ManageCategory';
+import ManageRevenue from './components/pages/ManageRevenue';
+import ManageRating from './components/pages/ManageRating';
 
 class DieuHuongURL extends Component {
     render() {
         return (
             <Routes>
+                <Route path="/manage-rating" element={<ManageRating />} />
+                <Route path="/manage-revenue" element={<ManageRevenue />} />
+                <Route path="/manage-category" element={<ManageCategory />} />
+                <Route path="/manage-profile" element={<ManageProfile />} />
                 <Route path="/otpinput" element={<OTPInput />} />
                 <Route path="/reset" element={<Reset />} />
                 <Route path="/purchase-order" element={<PurchaseOrder />} />

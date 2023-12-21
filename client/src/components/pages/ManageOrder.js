@@ -248,7 +248,7 @@ function ManageOrder() {
                                                         return (
                                                             <tr key={order._id}>
                                                                 <td>{index + 1}</td>
-                                                                <td>{order.user_id.firstname} {order.user_id.lastname}</td>
+                                                                <td>{order.receiver}</td>
                                                                 <td>{formatDate(order.order_date)}</td>
                                                                 <td>{order.note}</td>
                                                                 <td>

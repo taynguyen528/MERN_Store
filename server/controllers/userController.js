@@ -1,7 +1,5 @@
 const User = require("../models/userModel");
 const Role = require("../models/roleModel");
-const Order = require("../models/orderModel");
-const OrderItem = require("../models/orderItemModel");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 
@@ -19,9 +17,13 @@ exports.addUser = async (req, res) => {
             idRole,
         } = req.body;
         const existingUser = await User.findOne({ username });
+        const existingUser1 = await User.findOne({ email });
 
         if (existingUser) {
             return res.status(401).json({ message: "Người dùng đã tồn tại!" });
+        }
+        if (existingUser1) {
+            return res.status(401).json({ message: "Email đã tồn tại!" });
         }
         let userRole = idRole;
 
@@ -102,27 +104,55 @@ exports.editUser = async (req, res) => {
             email,
             address,
             idRole,
+            flgEmail,
+            flgUserName,
         } = req.body;
-        const existingUser = await User.findOne({ username });
+        if (flgEmail) {
+            const existingUser = await User.findOne({ email });
 
-        if (existingUser) {
-            return res.status(401).json({ message: "Người dùng đã tồn tại!" });
+            if (existingUser) {
+                return res.status(401).json({ message: "Email đã tồn tại!" });
+            }
         }
+
+        if (flgUserName) {
+            const existingUser = await User.findOne({ username });
+
+            if (existingUser) {
+                return res
+                    .status(401)
+                    .json({ message: "Người dùng đã tồn tại!" });
+            }
+        }
+        const currentUser = await User.findById(req.params.userId);
+
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+        // Kiểm tra xem idRole đã tồn tại và mật khẩu có thay đổi hay không
+        const updateFields = {
+            firstname,
+            lastname,
+            username,
+            phone,
+            email,
+            address,
+        };
+
+        // Nếu mật khẩu có thay đổi, thêm trường password vào danh sách cần cập nhật
+        if (password) {
+            updateFields.password = hashedPassword;
+        }
+
+        // Nếu idRole tồn tại, thêm trường idRole vào danh sách cần cập nhật
+        if (idRole !== undefined) {
+            updateFields.idRole = idRole;
+        }
+
+        // Thực hiện cập nhật thông tin người dùng
         const updatedUser = await User.findByIdAndUpdate(
             req.params.userId,
-            {
-                firstname,
-                lastname,
-                username,
-                password: hashedPassword,
-                phone,
-                email,
-                address,
-                idRole,
-            },
+            updateFields,
             { new: true }
         );
 
@@ -131,10 +161,11 @@ exports.editUser = async (req, res) => {
                 .status(404)
                 .json({ message: "Người dùng không tồn tại" });
         }
+
         res.json(updatedUser);
     } catch (error) {
         res.status(500).json({
-            message: "Lỗi khi cập nhật thông tin người dùng",
+            message: "Lỗi khi cập nhật thông tin người dùng" + error,
         });
     }
 };
@@ -149,13 +180,13 @@ exports.deleteUser = async (req, res) => {
                 .status(404)
                 .json({ message: "Người dùng không tồn tại" });
         }
-        const orders = await Order.find({ user_id: userId });
-        await Promise.all(
-            orders.map(async (order) => {
-                await OrderItem.deleteMany({ order_id: order._id });
-                await Order.findByIdAndDelete(order._id);
-            })
-        );
+        // const orders = await Order.find({ user_id: userId });
+        // await Promise.all(
+        //   orders.map(async (order) => {
+        //     await OrderItem.deleteMany({ order_id: order._id });
+        //     await Order.findByIdAndDelete(order._id);
+        //   })
+        // );
         res.json({ message: "Người dùng đã bị xóa" });
     } catch (error) {
         res.status(500).json({ message: "Lỗi khi xóa người dùng" });
@@ -200,14 +231,12 @@ exports.checkUserName = async (req, res) => {
         if (user) {
             res.status(200).send({ email: user.email });
         } else {
-            res.status(404).send({
-                message: "Username does not exist in the database" + username,
-            });
+            res.status(404).send({ message: "Tên người dùng không tồn tại" });
         }
     } catch (error) {
         console.error(error);
         res.status(500).send({
-            message: "An error occurred while checking the Username",
+            message: "Lỗi trong quá trình kiểm tra tên người dùng",
         });
     }
 };
@@ -257,11 +286,9 @@ exports.sendEmail = (req, res) => {
     };
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            res.status(500).send({
-                message: "An error occurred while sending the email" + error,
-            });
+            res.status(500).send({ message: "Lỗi trong quá trình gửi email" });
         } else {
-            res.status(200).send({ message: "Email sent successfully" });
+            res.status(200).send({ message: "Email được gửi thành công" });
         }
     });
 };

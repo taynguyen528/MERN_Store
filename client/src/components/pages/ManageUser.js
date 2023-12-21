@@ -27,6 +27,8 @@ function ManageUser() {
     const passwordRef = useRef(null);
     const [roles, setRoles] = useState([]);
     const [users, setUsers] = useState([]);
+    const [oldUserName, setOldUserName] = useState('');
+    const [oldEmail, setOldEmail] = useState('');
 
     useEffect(() => {
         axios.get(`${API_URL}/api/roles`)
@@ -59,7 +61,8 @@ function ManageUser() {
                         emailRef.current.value = email;
                         setRole(response.data.idRole);
                         usernameRef.current.value = username;
-                        //passwordRef.current.value = password;
+                        setOldUserName(username);
+                        setOldEmail(email);
                     });
 
                     setIdItem(id);
@@ -169,10 +172,19 @@ function ManageUser() {
                 } else {
                     toast('Lỗi khi thêm mới người dùng');
                 }
+            }).catch((e) => {
+                toast(e.response.data.message);
             });
 
         }
         else {
+            var flgEmail = false, flgUserName = false;
+            if (username != oldUserName) {
+                flgUserName = true;
+            }
+            if (email != oldEmail) {
+                flgEmail = true;
+            }
             const updatedInfo = {
                 firstname: firstName,
                 lastname: lastName,
@@ -182,6 +194,8 @@ function ManageUser() {
                 username: username,
                 password: password,
                 idRole: role,
+                flgEmail: flgEmail,
+                flgUserName: flgUserName
             };
             axios.put(`${API_URL}/api/users/${idItem}`, updatedInfo).then((response) => {
                 if (response.status === 200) {
@@ -191,6 +205,8 @@ function ManageUser() {
                 } else {
                     toast('Lỗi khi cập nhật thông tin người dùng');
                 }
+            }).catch((e) => {
+                toast(e.response.data.message);
             });
             setIdItem(0);
         }
@@ -310,6 +326,7 @@ function ManageUser() {
                                                 <thead className="thead-primary table-sorting">
                                                     <tr>
                                                         <th>#</th>
+                                                        <th>Username</th>
                                                         <th>Name</th>
                                                         <th>Phone</th>
                                                         <th>Email</th>
@@ -323,6 +340,7 @@ function ManageUser() {
                                                         return (
                                                             <tr key={user._id}>
                                                                 <td>{index + 1}</td>
+                                                                <td>{user.username}</td>
                                                                 <td>{user.firstname} {user.lastname}</td>
                                                                 <td>{user.phone}</td>
                                                                 <td>{user.email}</td>

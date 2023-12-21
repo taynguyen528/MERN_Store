@@ -311,7 +311,7 @@ exports.getProductsBySubcategory = async (req, res) => {
         } else if (orderBy === 'title-descending') {
             sortOptions = { name: -1 };
         }
-        
+
         if (!subcategory) {
             return res.status(404).json({ message: 'Danh mục con không tồn tại' });
         }
@@ -392,3 +392,28 @@ exports.search = async (req, res) => {
         res.status(500).json({ message: 'Lỗi khi tìm kiếm sản phẩm' });
     }
 }
+
+exports.checkUserHasPurchased = async (req, res) => {
+    try {
+        const { userId, productId } = req.params;
+
+        const orderItems = await OrderItem.find({ product_id: productId });
+
+        // Extract order_ids from the found orderItems
+        const orderIds = orderItems.map(orderItem => orderItem.order_id);
+
+        // Fetch associated Order documents
+        const orders = await Order.find({ _id: { $in: orderIds } });
+
+        // Check if there's an order with the specified user_id
+        const userHasPurchased = orders.some(order => order.user_id == userId);
+
+        if (userHasPurchased) {
+            res.status(200).json({ message: 'Success' });
+        } else {
+            res.status(201).json({ message: 'Null' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Lỗi' });
+    }
+};

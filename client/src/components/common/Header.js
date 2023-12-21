@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import API_URL from '../../config';
+import { API_URL } from '../../config';
 import axios from 'axios';
 import { ReactSearchAutocomplete } from 'react-search-autocomplete'
 import { useCart } from '../Cart/CartContext';
@@ -85,6 +85,20 @@ function Header() {
 
         window.location.href = '/';
     }
+
+    const addClassToElement = () => {
+        const element = document.getElementById('site-nav--mobile');
+        if (element) {
+            element.classList.add('active');
+        }
+    };
+
+    const removeClassFromElement = () => {
+        const element = document.getElementById('site-nav--mobile');
+        if (element) {
+            element.classList.remove('active');
+        }
+    };
     return (
         <>
             <div className="promo-bar" id="topbar">
@@ -169,6 +183,11 @@ function Header() {
                                             </span>
                                         </a>
                                     </div>
+
+                                    <div className="action--bar hamburger-menu hidden-lg hidden-md"
+                                        id="site-menu-handle" onClick={addClassToElement}>
+                                        <span className="bar"></span>
+                                    </div>
                                 </div>
                             </div>
                             <div className="col-md-12 wrap-header-4 hidden-sm hidden-xs">
@@ -207,13 +226,28 @@ function Header() {
                                                             </a>
                                                         </li>
                                                         <li className="">
-                                                            <a href="/manage-product" title="Dây Nịt">
+                                                            <a href="/manage-product" title="Quản lý sản phẩm">
                                                                 Sản phẩm
                                                             </a>
                                                         </li>
                                                         <li className="">
-                                                            <a href="/manage-order" title="Nơ - Cà Vạt">
+                                                            <a href="/manage-order" title="Quản lý đơn hàng">
                                                                 Đơn hàng
+                                                            </a>
+                                                        </li>
+                                                        <li className="">
+                                                            <a href="/manage-category" title="Quản lý danh mục">
+                                                                Danh mục
+                                                            </a>
+                                                        </li>
+                                                        <li className="">
+                                                            <a href="/manage-revenue" title="Quản lý doanh thu">
+                                                                Doanh thu
+                                                            </a>
+                                                        </li>
+                                                        <li className="">
+                                                            <a href="/manage-rating" title="Quản lý đánh giá">
+                                                                Đánh giá
                                                             </a>
                                                         </li>
                                                     </ul>
@@ -228,11 +262,16 @@ function Header() {
                                                     </li>
                                                     :
                                                     <li className="has-submenu ">
-                                                        <a style={{ cursor: "pointer" }} title="Tài khoản">
+                                                        <a href='/manage-profile' title="Tài khoản">
                                                             {firstname + " " + lastname}
                                                             <i className="fa fa-chevron-down" aria-hidden="true" />
                                                         </a>
                                                         <ul className="list-submenu">
+                                                            <li className="">
+                                                                <a href="/manage-profile" title="Tài khoản">
+                                                                    Tài khoản
+                                                                </a>
+                                                            </li>
                                                             <li className="">
                                                                 <a href="/purchase-order" title="Đơn hàng của bạn">
                                                                     Đơn hàng của bạn
@@ -254,6 +293,122 @@ function Header() {
                     </div>
                 </div>
             </header>
+
+            <div id="site-nav--mobile" className="site-nav style--sidebar">
+                <div id="site-navigation" className="site-nav-container">
+                    <div className="site-nav-container-last">
+                        <p className="title">Menu</p>
+                        <div className="main-navbar">
+                            <nav className="primary-menu">
+                                <ul className="menu-collection">
+                                    {categories.map((categoryWithSubcategories) => (
+                                        <li className="navi1 has-sub nav-level0" key={categoryWithSubcategories.category._id}>
+                                            <a href={"/collection/" + categoryWithSubcategories.category.name} title={categoryWithSubcategories.category.name}>
+                                                {categoryWithSubcategories.category.name}
+                                            </a>
+                                            <span className="icon-subnav">
+                                                <i className="fa fa-angle-down"></i>
+                                            </span>
+                                            <ul className="submenu subnav-children">
+                                                {categoryWithSubcategories.subcategories.map((subcategory) => (
+                                                    <li className='navi2' key={subcategory._id}>
+                                                        <a href={"/collection/" + categoryWithSubcategories.category.name + "/" + subcategory.name} title={subcategory.name}>
+                                                            {subcategory.name}
+                                                        </a>
+                                                    </li>
+                                                ))}
+                                            </ul>
+
+                                        </li>
+                                    ))}
+                                    {
+                                        role === 'admin' &&
+                                        <li className="navi1 has-sub nav-level0">
+                                            <a style={{ cursor: "pointer" }} title="Quản lí">
+                                                Quản lí
+                                            </a>
+                                            <span className="icon-subnav">
+                                                <i className="fa fa-angle-down"></i>
+                                            </span>
+                                            <ul className="submenu subnav-children">
+                                                <li className="navi2">
+                                                    <a href="/manage-user" title="Quản lí người dùng">
+                                                        Người dùng
+                                                    </a>
+                                                </li>
+                                                <li className="navi2">
+                                                    <a href="/manage-product" title="Quản lý sản phẩm">
+                                                        Sản phẩm
+                                                    </a>
+                                                </li>
+                                                <li className="navi2">
+                                                    <a href="/manage-order" title="Quản lý đơn hàng">
+                                                        Đơn hàng
+                                                    </a>
+                                                </li>
+                                                <li className="navi2">
+                                                    <a href="/manage-category" title="Quản lý danh mục">
+                                                        Danh mục
+                                                    </a>
+                                                </li>
+                                                <li className="navi2">
+                                                    <a href="/manage-revenue" title="Quản lý doanh thu">
+                                                        Doanh thu
+                                                    </a>
+                                                </li>
+                                                <li className="navi2">
+                                                    <a href="/manage-rating" title="Quản lý đánh giá">
+                                                        Đánh giá
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    }
+                                    {
+                                        !isLoggedIn ?
+                                            <li className="navi1 ">
+                                                <a href='/login' title="Đăng nhập">
+                                                    Đăng nhập
+                                                </a>
+                                            </li>
+                                            :
+                                            <li className="navi1 has-sub nav-level0">
+                                                <a href='/manage-profile' title="Tài khoản">
+                                                    {firstname + " " + lastname}
+                                                </a>
+                                                <span className="icon-subnav">
+                                                    <i className="fa fa-angle-down"></i>
+                                                </span>
+                                                <ul className="submenu subnav-children">
+                                                    <li className="navi2">
+                                                        <a href="/manage-profile" title="Tài khoản">
+                                                            Tài khoản
+                                                        </a>
+                                                    </li>
+                                                    <li className="navi2">
+                                                        <a href="/purchase-order" title="Đơn hàng của bạn">
+                                                            Đơn hàng của bạn
+                                                        </a>
+                                                    </li>
+                                                    <li className="navi2">
+                                                        <a onClick={handleLogout} title="Đăng xuất" style={{ cursor: "pointer" }}>
+                                                            Đăng xuất
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                    }
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <button id="site-close-handle" className="site-close-handle" onClick={removeClassFromElement} title="Đóng">
+                    <span className="hamburger-menu active" aria-hidden="true">
+                        <span className="bar animate"></span>
+                    </span>
+                </button>
+            </div>
         </>
     );
 }

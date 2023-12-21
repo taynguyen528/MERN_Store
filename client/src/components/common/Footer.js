@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 function Footer() {
     return (
@@ -120,7 +120,10 @@ function Footer() {
                                     <div className="footer-content toggle-footer">
                                         <ul>
                                             <li className="item">
-                                                <a href="/pages/about-us" title="Giới thiệu">
+                                                <a
+                                                    href="/pages/about-us"
+                                                    title="Giới thiệu"
+                                                >
                                                     Giới thiệu
                                                 </a>
                                             </li>
@@ -134,12 +137,18 @@ function Footer() {
                                                 </a>
                                             </li>
                                             <li className="item">
-                                                <a href="/pages/huong-dan-chon-size" title="Cách chọn size">
+                                                <a
+                                                    href="/pages/huong-dan-chon-size"
+                                                    title="Cách chọn size"
+                                                >
                                                     Cách chọn size
                                                 </a>
                                             </li>
                                             <li className="item">
-                                                <a href="/pages/lien-he" title="Thông tin liên hệ">
+                                                <a
+                                                    href="/pages/lien-he"
+                                                    title="Thông tin liên hệ"
+                                                >
                                                     Thông tin liên hệ
                                                 </a>
                                             </li>
@@ -201,7 +210,10 @@ function Footer() {
                                                 </a>
                                             </li>
                                             <li className="item">
-                                                <a href="/pages/doi-tac-san-xuat" title="Đối tác sản xuất">
+                                                <a
+                                                    href="/pages/doi-tac-san-xuat"
+                                                    title="Đối tác sản xuất"
+                                                >
                                                     Đối tác sản xuất
                                                 </a>
                                             </li>
@@ -210,7 +222,8 @@ function Footer() {
                                                     href="/pages/cong-tac-vien-kenta"
                                                     title="Bán hàng liên kết (Affiliate)"
                                                 >
-                                                    Bán hàng liên kết (Affiliate)
+                                                    Bán hàng liên kết
+                                                    (Affiliate)
                                                 </a>
                                             </li>
                                         </ul>
@@ -219,7 +232,9 @@ function Footer() {
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3 col-lg">
                                 <div className="footer-col footer-block">
-                                    <h4 className="footer-title">Kết nối với Kenta</h4>
+                                    <h4 className="footer-title">
+                                        Kết nối với Kenta
+                                    </h4>
                                     <div className="footer-content">
                                         <div className="social-list">
                                             <a
@@ -240,7 +255,10 @@ function Footer() {
                                             <a
                                                 href="https://www.tiktok.com/@kenta.vn"
                                                 target="_blank"
-                                                style={{ background: "transparent!important" }}
+                                                style={{
+                                                    background:
+                                                        "transparent!important",
+                                                }}
                                             >
                                                 <img src="//theme.hstatic.net/1000096703/1000836887/14/tiktok.png?v=241" />
                                             </a>
@@ -258,16 +276,19 @@ function Footer() {
                             </div>
                             <div className="col-xs-12 col-sm-6 col-md-3 col-lg">
                                 <div className="footer-col footer-block">
-                                    <h4 className="footer-title active">Thông tin cửa hàng</h4>
+                                    <h4 className="footer-title active">
+                                        Thông tin cửa hàng
+                                    </h4>
                                     <div
                                         className="footer-content toggle-footer"
                                         style={{ display: "block" }}
                                     >
                                         <ul className="information">
-                                            
                                             <li>
                                                 <img src="//theme.hstatic.net/1000096703/1000836887/14/buildings.png?v=241" />
-                                                <span /> 01 Võ Văn Ngân, Linh Chiểu, Thủ Đức, Thành phố Hồ Chí Minh
+                                                <span /> 01 Võ Văn Ngân, Linh
+                                                Chiểu, Thủ Đức, Thành phố Hồ Chí
+                                                Minh
                                             </li>
                                             <li>
                                                 <img src="//theme.hstatic.net/1000096703/1000836887/14/communications.png?v=241" />
@@ -275,7 +296,8 @@ function Footer() {
                                             </li>
                                             <li>
                                                 <img src="//theme.hstatic.net/1000096703/1000836887/14/envelopes.png?v=241" />
-                                                <span>Mail:</span> pttnguyen528@gmail.com
+                                                <span>Mail:</span>{" "}
+                                                pttnguyen528@gmail.com
                                             </li>
                                         </ul>
                                     </div>
@@ -288,7 +310,8 @@ function Footer() {
                     <div className="container">
                         <div className="main-footer--border">
                             <p>
-                                Copyright © 2023 <a href="https://kenta.vn"> KENTA.VN</a>.
+                                Copyright © 2023{" "}
+                                <a href="https://kenta.vn"> KENTA.VN</a>.
                             </p>
                         </div>
                     </div>

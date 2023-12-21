@@ -67,13 +67,13 @@ function Login() {
                         },
                     })
                         .then(() => window.location.href = '/otpinput')
-                        .catch(console.log);
+                        .catch((e) => alert(e.response.data.message));
                 } else {
                     alert("Người dùng có tên đăng nhập này không tồn tại!");
                     console.log(response.data.message);
                 }
             })
-                .catch(console.log);
+            .catch((e) => alert(e.response.data.message));
         } else {
             setIsLoading(false);
             alert("Vui lòng nhập tên đăng nhập");
@@ -99,63 +99,55 @@ function Login() {
                                 <div className="col-md-6 col-xs-12 wrapbox-content-account">
                                     <div id="customer-login">
                                         <div id="login" className="userbox">
-                                            <form
-                                                acceptCharset="UTF-8"
-                                                action="/account/login"
-                                                id="customer_login"
-                                                method="post"
-                                            >
-                                                <div className="clearfix large_form">
-                                                    <label htmlFor="customer_email" className="icon-field">
-                                                        <i className="icon-login icon-envelope " />
-                                                    </label>
-                                                    <input
-                                                        required
-                                                        type="email"
-                                                        name="customer[email]"
-                                                        id="customer_email"
-                                                        placeholder="Email"
-                                                        className="text"
-                                                        value={username} onChange={e => setUsername(e.target.value)}
-                                                    />
+                                            <div className="clearfix large_form">
+                                                <label htmlFor="customer_email" className="icon-field">
+                                                    <i className="icon-login icon-envelope " />
+                                                </label>
+                                                <input
+                                                    required
+                                                    type="text"
+                                                    name="customer[email]"
+                                                    id="customer_email"
+                                                    placeholder="Tên đăng nhập"
+                                                    className="text"
+                                                    value={username} onChange={e => setUsername(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="clearfix large_form">
+                                                <label htmlFor="customer_password" className="icon-field">
+                                                    <i className="icon-login icon-shield" />
+                                                </label>
+                                                <input
+                                                    required
+                                                    type="password"
+                                                    name="customer[password]"
+                                                    id="customer_password"
+                                                    placeholder="Mật khẩu"
+                                                    className="text"
+                                                    size={16}
+                                                    value={password} onChange={e => setPassword(e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="clearfix action_account_custommer">
+                                                <div className="action_bottom btn btn-outline-primary">
+                                                    <button
+                                                        className="btn btn-signin"
+                                                        onClick={handleLogin}
+                                                    >ĐĂNG NHẬP</button>
                                                 </div>
-                                                <div className="clearfix large_form">
-                                                    <label htmlFor="customer_password" className="icon-field">
-                                                        <i className="icon-login icon-shield" />
-                                                    </label>
-                                                    <input
-                                                        required
-                                                        type="password"
-                                                        name="customer[password]"
-                                                        id="customer_password"
-                                                        placeholder="Mật khẩu"
-                                                        className="text"
-                                                        size={16}
-                                                        value={password} onChange={e => setPassword(e.target.value)}
-                                                    />
+                                                <div className="req_pass">
+                                                    <a
+                                                        style={{ cursor: 'pointer' }} onClick={() => sendOtp()}
+                                                    >
+                                                        Quên mật khẩu?
+                                                    </a>
+                                                    <br />
+                                                    hoặc{" "}
+                                                    <a title="Đăng ký" href="/register">
+                                                        Đăng ký
+                                                    </a>
                                                 </div>
-                                                <div className="clearfix action_account_custommer">
-                                                    <div className="action_bottom btn btn-outline-primary">
-                                                        <input
-                                                            className="btn btn-signin"
-                                                            onClick={handleLogin}
-                                                            defaultValue="Đăng nhập"
-                                                        />
-                                                    </div>
-                                                    <div className="req_pass">
-                                                        <a
-                                                            style={{ cursor: 'pointer' }} onClick={() => sendOtp()}
-                                                        >
-                                                            Quên mật khẩu?
-                                                        </a>
-                                                        <br />
-                                                        hoặc{" "}
-                                                        <a title="Đăng ký" href="/register">
-                                                            Đăng ký
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
