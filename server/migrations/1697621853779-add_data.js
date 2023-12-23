@@ -63,10 +63,19 @@ module.exports = {
                 name: "Giày Dép",
             },
             {
-                name: "Quần Áo",
+                name: "Áo Khoác",
             },
             {
-                name: "Dụng Cụ",
+                name: "Áo Thun",
+            },
+            {
+                name: "Áo Sơ Mi",
+            },
+            {
+                name: "Quần Dài",
+            },
+            {
+                name: "Quần Short",
             },
             {
                 name: "Phụ Kiện",
@@ -76,11 +85,20 @@ module.exports = {
         const catGiayDep = await categorysCollection.findOne({
             name: "Giày Dép",
         });
-        const catQuanAo = await categorysCollection.findOne({
-            name: "Quần Áo",
+        const catAoThun = await categorysCollection.findOne({
+            name: "Áo Thun",
         });
-        const catDungCu = await categorysCollection.findOne({
-            name: "Dụng Cụ",
+        const catAoSoMi = await categorysCollection.findOne({
+            name: "Áo Sơ Mi",
+        });
+        const catAoKhoac = await categorysCollection.findOne({
+            name: "Áo Khoác",
+        });
+        const catQuanDai = await categorysCollection.findOne({
+            name: "Quần Dài",
+        });
+        const catQuanShort = await categorysCollection.findOne({
+            name: "Quần Short",
         });
         const catPhuKien = await categorysCollection.findOne({
             name: "Phụ Kiện",
@@ -97,14 +115,6 @@ module.exports = {
             },
             {
                 category_id: catGiayDep._id,
-                name: "Xăn đan & Dép",
-            },
-            {
-                category_id: catGiayDep._id,
-                name: "Giày Luyện Tập",
-            },
-            {
-                category_id: catGiayDep._id,
                 name: "Giày Bóng Rổ",
             },
             {
@@ -112,96 +122,108 @@ module.exports = {
                 name: "Giày Bóng Đá",
             },
             {
-                category_id: catQuanAo._id,
+                category_id: catGiayDep._id,
+                name: "Dép Quai Ngang",
+            },
+            {
+                category_id: catGiayDep._id,
+                name: "Dép Xỏ Ngón",
+            },
+            {
+                category_id: catAoThun._id,
                 name: "Áo Ba Lổ & Áo Thun",
             },
             {
-                category_id: catQuanAo._id,
-                name: "Áo Khoác",
+                category_id: catAoThun._id,
+                name: "Áo Thun Tay Ngắn",
             },
             {
-                category_id: catQuanAo._id,
-                name: "Áo Polo",
+                category_id: catAoThun._id,
+                name: "Áo Thun Tay Dài",
             },
             {
-                category_id: catQuanAo._id,
-                name: "Áo tập",
+                category_id: catAoThun._id,
+                name: "Áo Thun Polo",
             },
             {
-                category_id: catQuanAo._id,
-                name: "Áo Chui Đầu & Áo Nỉ",
+                category_id: catAoSoMi._id,
+                name: "Sơ Mi Tay Ngắn",
             },
             {
-                category_id: catQuanAo._id,
-                name: "Đồ Bơi",
+                category_id: catAoSoMi._id,
+                name: "Sơ Mi Tay Dài",
             },
             {
-                category_id: catQuanAo._id,
-                name: "Đồ Lót",
+                category_id: catAoKhoac._id,
+                name: "Áo Khoác Nỉ",
             },
             {
-                category_id: catQuanAo._id,
-                name: "Đồ Bóng Rổ",
+                category_id: catAoKhoac._id,
+                name: "Áo Khoác Dù",
             },
             {
-                category_id: catQuanAo._id,
-                name: "Đồ Bóng Đá",
+                category_id: catAoKhoac._id,
+                name: "Áo Khoác Kaki",
             },
             {
-                category_id: catDungCu._id,
-                name: "Bóng Đá",
+                category_id: catAoKhoac._id,
+                name: "Áo Khoác Blazer",
             },
             {
-                category_id: catDungCu._id,
-                name: "Bóng Rổ",
+                category_id: catQuanDai._id,
+                name: "Quần Kaki",
             },
             {
-                category_id: catDungCu._id,
-                name: "Đồ Bảo Hộ",
+                category_id: catQuanDai._id,
+                name: "Quần Tây Nam",
             },
             {
-                category_id: catDungCu._id,
-                name: "Đồ Luyện Tập",
+                category_id: catQuanDai._id,
+                name: "Quần Jean",
             },
             {
-                category_id: catDungCu._id,
-                name: "Gold",
+                category_id: catQuanDai._id,
+                name: "Quần Jogger Thun",
             },
             {
-                category_id: catDungCu._id,
-                name: "Yoga",
+                category_id: catQuanDai._id,
+                name: "Quần Jogger Kaki",
+            },
+            {
+                category_id: catQuanShort._id,
+                name: "Quần Short Kaki",
+            },
+            {
+                category_id: catQuanShort._id,
+                name: "Quần Short Thun",
+            },
+            {
+                category_id: catQuanShort._id,
+                name: "Quần Short Jean",
+            },
+            {
+                category_id: catQuanShort._id,
+                name: "Quần Short Tây",
+            },
+            {
+                category_id: catQuanShort._id,
+                name: "Quần Short Dù",
             },
             {
                 category_id: catPhuKien._id,
-                name: "Túi & Balo",
+                name: "Ví Da",
             },
             {
                 category_id: catPhuKien._id,
-                name: "Mũ Nón",
+                name: "Dây Nịt",
             },
             {
                 category_id: catPhuKien._id,
-                name: "Phụ Kiện Bơi Lội",
+                name: "Cà Vạt, Nơ",
             },
             {
                 category_id: catPhuKien._id,
                 name: "Vớ",
-            },
-            {
-                category_id: catPhuKien._id,
-                name: "Bình Nước",
-            },
-            {
-                category_id: catPhuKien._id,
-                name: "Găng Tay",
-            },
-            {
-                category_id: catPhuKien._id,
-                name: "Bộ Chăm Sóc Giày",
-            },
-            {
-                category_id: catPhuKien._id,
-                name: "Khăn Tập",
             },
         ]);
 
@@ -272,13 +294,25 @@ module.exports = {
                 color_name: "Trắng",
             },
             {
+                color_name: "Kem",
+            },
+            {
                 color_name: "Đen",
             },
             {
-                color_name: "Xanh",
+                color_name: "Xanh Dương",
+            },
+            {
+                color_name: "Xanh Lá",
+            },
+            {
+                color_name: "Xanh Đen",
             },
             {
                 color_name: "Vàng",
+            },
+            {
+                color_name: "Xám",
             },
             {
                 color_name: "Hồng",
