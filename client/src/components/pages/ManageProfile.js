@@ -76,6 +76,10 @@ const ManageProfile = () => {
         if (email != oldEmail) {
             flgEmail = true;
         }
+        if (password != "" && password.length < 8) {
+                toast('Vui lòng nhập mật khẩu ít nhất 8 kí tự');
+                return;
+            }
         const updatedInfo = {
             firstname: firstName,
             lastname: lastName,

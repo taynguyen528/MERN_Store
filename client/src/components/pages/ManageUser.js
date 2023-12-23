@@ -132,7 +132,7 @@ function ManageUser() {
         const username = usernameRef.current.value;
         const password = passwordRef.current.value;
 
-        if (!firstName || !lastName || !address || !phone || !email || !role || !username || !password) {
+        if (!firstName || !lastName || !address || !phone || !email || !role || !username) {
             toast('Vui lòng điền đầy đủ thông tin');
             return;
         }
@@ -143,16 +143,16 @@ function ManageUser() {
             return;
         }
 
-        if (password.length < 8) {
-            toast('Vui lòng nhập mật khẩu ít nhất 8 kí tự');
-            return;
-        }
         const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
         if (!email.match(emailPattern)) {
             toast('Email không hợp lệ');
             return;
         }
         if (idItem === 0) {
+            if (password.length < 8) {
+                toast('Vui lòng nhập mật khẩu ít nhất 8 kí tự');
+                return;
+            }
             const userData = {
                 firstname: firstName,
                 lastname: lastName,
@@ -296,7 +296,11 @@ function ManageUser() {
                                                                 <input type="email" className="form-control" ref={emailRef} />
                                                             </div>
                                                             <div className="form-group">
-                                                                <label>Mật khẩu <b style={{ color: "red" }}>*</b></label>
+                                                                <label>Mật khẩu
+                                                                    {
+                                                                        idItem == 0 && <b style={{ color: "red" }}>*</b>
+                                                                    }
+                                                                </label>
                                                                 <input type="password" className="form-control" ref={passwordRef} autoComplete="password" />
                                                             </div>
                                                         </div>
