@@ -1,25 +1,34 @@
-const User = require('../models/userModel');
-const Role = require('../models/roleModel');
-const bcrypt = require('bcrypt');
-const nodemailer = require('nodemailer');
+const User = require("../models/userModel");
+const Role = require("../models/roleModel");
+const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
 
 // Thêm mới người dùng
 exports.addUser = async (req, res) => {
   try {
-    const { firstname, lastname, username, password, phone, email, address, idRole } = req.body;
+    const {
+      firstname,
+      lastname,
+      username,
+      password,
+      phone,
+      email,
+      address,
+      idRole,
+    } = req.body;
     const existingUser = await User.findOne({ username });
     const existingUser1 = await User.findOne({ email });
 
     if (existingUser) {
-      return res.status(401).json({ message: 'Người dùng đã tồn tại!' });
+      return res.status(401).json({ message: "Người dùng đã tồn tại!" });
     }
     if (existingUser1) {
-      return res.status(401).json({ message: 'Email đã tồn tại!' });
+      return res.status(401).json({ message: "Email đã tồn tại!" });
     }
     let userRole = idRole;
 
     if (!idRole) {
-      const defaultRole = await Role.findOne({ roleName: 'user' });
+      const defaultRole = await Role.findOne({ roleName: "user" });
 
       if (defaultRole) {
         userRole = defaultRole._id;
@@ -42,18 +51,20 @@ exports.addUser = async (req, res) => {
 
     await newUser.save();
 
-    res.status(201).json({ message: 'Người dùng đã được thêm thành công!' });
+    res.status(201).json({ message: "Người dùng đã được thêm thành công!" });
   } catch (error) {
-    res.status(500).json({ error: 'Lỗi khi thêm người dùng: ' + error.message });
+    res
+      .status(500)
+      .json({ error: "Lỗi khi thêm người dùng: " + error.message });
   }
 };
 // Lấy tất cả người dùng
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().populate('idRole', 'roleName');
+    const users = await User.find().populate("idRole", "roleName");
     res.json(users);
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi khi lấy danh sách người dùng' });
+    res.status(500).json({ message: "Lỗi khi lấy danh sách người dùng" });
   }
 };
 
@@ -62,30 +73,41 @@ exports.getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) {
-      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
     }
 
     const role = await Role.findById(user.idRole);
 
     res.json({
       user: user,
-      roleName: role ? role.roleName : '',
-      idRole: role ? role._id : ''
+      roleName: role ? role.roleName : "",
+      idRole: role ? role._id : "",
     });
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi khi lấy thông tin người dùng' });
+    res.status(500).json({ message: "Lỗi khi lấy thông tin người dùng" });
   }
 };
 
 // Cập nhật thông tin người dùng bằng ID
 exports.editUser = async (req, res) => {
   try {
-    const { firstname, lastname, username, password, phone, email, address, idRole, flgEmail, flgUserName } = req.body;
+    const {
+      firstname,
+      lastname,
+      username,
+      password,
+      phone,
+      email,
+      address,
+      idRole,
+      flgEmail,
+      flgUserName,
+    } = req.body;
     if (flgEmail) {
       const existingUser = await User.findOne({ email });
 
       if (existingUser) {
-        return res.status(401).json({ message: 'Email đã tồn tại!' });
+        return res.status(401).json({ message: "Email đã tồn tại!" });
       }
     }
 
@@ -93,7 +115,7 @@ exports.editUser = async (req, res) => {
       const existingUser = await User.findOne({ username });
 
       if (existingUser) {
-        return res.status(401).json({ message: 'Người dùng đã tồn tại!' });
+        return res.status(401).json({ message: "Người dùng đã tồn tại!" });
       }
     }
     const saltRounds = 10;
@@ -127,13 +149,14 @@ exports.editUser = async (req, res) => {
     );
 
     if (!updatedUser) {
-      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
     }
 
     res.json(updatedUser);
-
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi khi cập nhật thông tin người dùng' + error });
+    res
+      .status(500)
+      .json({ message: "Lỗi khi cập nhật thông tin người dùng" + error });
   }
 };
 
@@ -143,7 +166,7 @@ exports.deleteUser = async (req, res) => {
     const userId = req.params.userId;
     const user = await User.findByIdAndDelete(userId);
     if (!user) {
-      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
     }
     // const orders = await Order.find({ user_id: userId });
     // await Promise.all(
@@ -152,9 +175,9 @@ exports.deleteUser = async (req, res) => {
     //     await Order.findByIdAndDelete(order._id);
     //   })
     // );
-    res.json({ message: 'Người dùng đã bị xóa' });
+    res.json({ message: "Người dùng đã bị xóa" });
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi khi xóa người dùng' });
+    res.status(500).json({ message: "Lỗi khi xóa người dùng" });
   }
 };
 
@@ -166,23 +189,23 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ username });
 
     if (!user) {
-      return res.status(401).json({ message: 'Tên người dùng không tồn tại' });
+      return res.status(401).json({ message: "Tên người dùng không tồn tại" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Mật khẩu không đúng' });
+      return res.status(401).json({ message: "Mật khẩu không đúng" });
     }
     const role = await Role.findById(user.idRole);
 
     res.json({
       user: user,
-      roleName: role ? role.roleName : '',
-      message: 'Đăng nhập thành công'
+      roleName: role ? role.roleName : "",
+      message: "Đăng nhập thành công",
     });
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi khi lấy thông tin người dùng' });
+    res.status(500).json({ message: "Lỗi khi lấy thông tin người dùng" });
   }
 };
 
@@ -194,11 +217,13 @@ exports.checkUserName = async (req, res) => {
     if (user) {
       res.status(200).send({ email: user.email });
     } else {
-      res.status(404).send({ message: 'Tên người dùng không tồn tại' });
+      res.status(404).send({ message: "Tên người dùng không tồn tại" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send({ message: 'Lỗi trong quá trình kiểm tra tên người dùng' });
+    res
+      .status(500)
+      .send({ message: "Lỗi trong quá trình kiểm tra tên người dùng" });
   }
 };
 
@@ -208,33 +233,35 @@ exports.updatePassword = async (req, res) => {
   try {
     const user = await User.findOne({ username: username });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
     user.password = hashedPassword;
     await user.save();
 
-    res.status(200).json({ message: 'Password updated successfully' });
+    res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'An error occurred while updating the password' });
+    res
+      .status(500)
+      .json({ message: "An error occurred while updating the password" });
   }
 };
 
 exports.sendEmail = (req, res) => {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail",
     secure: true,
     auth: {
-      user: 'thangcao1906@gmail.com',
-      pass: 'uhlydqasvvkklfth',
+      user: "pttnguyen528@gmail.com",
+      pass: "mljbsomaufoasgpc",
     },
   });
   const { recipient_email, OTP } = req.body;
   const mailOptions = {
-    from: 'thangcao1906@gmail.com',
+    from: "pttnguyen528@gmail.com",
     to: recipient_email,
-    subject: 'PASSWORD RESET',
+    subject: "PASSWORD RESET",
     html: `<html>
              <body>
                <h2>Password Recovery</h2>
