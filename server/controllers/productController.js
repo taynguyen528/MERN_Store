@@ -198,38 +198,39 @@ exports.editProduct = async (req, res) => {
             const description = req.body.description;
             const subcategory_id = req.body.subcategory_id;
             const color_size = JSON.parse(req.body.color_size);
-            const imageUrls = req.files.map((file) => file.filename);
-            const url_image1 = `/images/product/${imageUrls[0]}`;
-            const url_image2 = `/images/product/${imageUrls[1]}`;
 
+            if (req.files && req.files.length > 0) {
+                const imageUrls = req.files.map((file) => file.filename);
+                // Thêm hình ảnh mới của sản phẩm
+                for (const imageUrl of imageUrls) {
+                    const imageProduct = new Image({
+                        product_id: productId,
+                        image_url: `/images/product/${imageUrl}`,
+                    });
+                    await imageProduct.save();
+                }
+
+                const imageUrlsToDelete = await Image.find({ product_id: productId });
+
+                // Cập nhật thông tin sản phẩm
+                await Product.findByIdAndUpdate(productId, {
+                    name,
+                    price,
+                    description,
+                    subcategory_id,
+                    url_image1: imageUrlsToDelete[0].image_url,
+                    url_image2: imageUrlsToDelete[1].image_url
+                });
+
+            }
+            
             // Cập nhật thông tin sản phẩm
             await Product.findByIdAndUpdate(productId, {
                 name,
                 price,
                 description,
-                subcategory_id,
-                url_image1,
-                url_image2
+                subcategory_id
             });
-
-            const imageUrlsToDelete = await Image.find({ product_id: productId });
-
-            // Xóa tệp ảnh từ thư mục public/images/product
-            imageUrlsToDelete.forEach((imageUrl) => {
-                const imagePath = path.join(__dirname, '..', 'public', imageUrl.image_url);
-                fs.unlinkSync(imagePath);
-            });
-            // Xóa hình ảnh cũ của sản phẩm
-            await Image.deleteMany({ product_id: productId });
-
-            // Thêm hình ảnh mới của sản phẩm
-            for (const imageUrl of imageUrls) {
-                const imageProduct = new Image({
-                    product_id: productId,
-                    image_url: `/images/product/${imageUrl}`,
-                });
-                await imageProduct.save();
-            }
 
             // Xóa thông tin màu sắc và kích thước cũ của sản phẩm
             await ProductSizeColor.deleteMany({ product_id: productId });

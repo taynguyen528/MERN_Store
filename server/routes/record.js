@@ -41,6 +41,7 @@ router.get('/colors', colorController.getAllColors);
 
 // Routes for 'imageProduct'
 router.get('/products/:productId/images', imageProductController.getImagesByProductId);
+router.delete('/images/:imageId', imageProductController.deleteImages);
 
 // Routes for 'orders'
 router.get('/orders', orderController.getAllOrders);
