@@ -12,10 +12,24 @@
 
 # Cách cài đặt:
 
-Truy cập link github:
-https://github.com/taynguyen528/MERN_Store
-Coppy link github của dự án.
+# Truy cập link github: https://github.com/taynguyen528/MERN_Store. Coppy link github của dự án.
 ![Alt text](image-6.png)
+
+# Mở terminal ở 1 foldel bất kì và chạy lệnh:
+
+git clone https://github.com/taynguyen528/MERN_Store.git
+![Alt text](image-7.png)
+
+# Mở VSCode và vào 2 folder client và server của dự án chạy lệnh npm:
+
+![Alt text](image-9.png)
+![Alt text](image-10.png)
+
+# Mở thêm 1 powersell và chạy lệnh : migrate -d mongodb://0.0.0.0:27017/MERN_Store up add_data để kết nối db
+
+![Alt text](image-11.png)
+
+# Sau khi có thông báo kết nối thành công: ở folder server chạy lệnh: node server js. Ở folder client chạy lệnh npm start để khởi chạy chương trình.
 
 # Giao diện chính của trang web:
 
